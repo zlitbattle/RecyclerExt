@@ -1,0 +1,25 @@
+apply plugin: 'com.android.library'
+apply plugin: 'maven-publish'
+
+ext {
+    GROUP_ID = 'com.zl'
+    RESP_URL = project.ext.releaseEnv ? ReleaseRepo : SnapshotsResp
+}
+project.afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                from components.release
+                groupId GROUP_ID
+                artifactId 'recyclerViewExt'
+                artifact generateSourcesJar
+                version project.version
+            }
+        }
+    }
+}
+
+task generateSourcesJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    classifier 'sources'
+}
