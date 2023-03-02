@@ -13,7 +13,7 @@ project.afterEvaluate {
                 groupId GROUP_ID
                 artifactId 'recyclerViewExt'
                 artifact generateSourcesJar
-                version project.version
+                version '1.0.0'
             }
         }
     }
