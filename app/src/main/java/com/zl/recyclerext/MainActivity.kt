@@ -1,8 +1,8 @@
 package com.zl.recyclerext
 
 import android.graphics.Color
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.zl.recyclerext.databinding.ItemDataBinding
 import com.zl.recyclerviewext.divider
@@ -17,13 +17,75 @@ class MainActivity : AppCompatActivity() {
         findViewById<RecyclerView>(R.id.recycler_view)?.apply {
             vertical()
             divider(Color.TRANSPARENT, 10)
-            registerItemView<String, ItemDataBinding>(
-                R.layout.item_data,
-                String::class.java,
-                bindItemView = { binding, data, position ->
-                    binding.text.text = (0..100000).random().toString()
-                })
-            refreshData(listOf("", "", "", "", "", "", "", "","","","","","","","","","","","","","","","","","","","","","","","","", "", "", "", "", "", "", "","","","","","","","","","","","","","","","","","","","","","","",""))
+            registerItemView<String, ItemDataBinding>(R.layout.item_data) { binding, data, position ->
+                binding.text.text = (0..100000).random().toString()
+            }
+            refreshData(
+                listOf(
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    ""
+                )
+            )
         }
     }
 }

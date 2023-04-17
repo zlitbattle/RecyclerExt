@@ -37,13 +37,13 @@ open class BaseRvMultipleDataBindingAdapter :
                 itemLongClickListener?.invoke(view, data!![position], position) ?: false
             }
         }
-        val recyclerViewItemType = itemTypeMap[getDataClass(data!![position])]
+        val recyclerViewItemType = itemTypeMap[data!![position].javaClass]
         recyclerViewItemType?.bindData(holder.dataBinding, data!![position], position)
         holder.dataBinding.executePendingBindings()
     }
 
     override fun getItemViewType(position: Int): Int {
-        return getDataClass(data!![position]).hashCode()
+        return data!![position].javaClass.hashCode()
     }
 
     fun <T : Any, DBINDING : ViewDataBinding> registerItemLayout(
@@ -60,10 +60,6 @@ open class BaseRvMultipleDataBindingAdapter :
             }
         }
         itemTypeMap[clazz] = recyclerViewItemType
-    }
-
-    private fun getDataClass(data: Any): Class<out Any> {
-        return if (data is Integer) Int::class.java else return data.javaClass
     }
 
     inner class VH(val dataBinding: ViewDataBinding) : RecyclerView.ViewHolder(dataBinding.root)

@@ -422,16 +422,15 @@ fun RecyclerView.divider(color: Int, horizontalSize: Int, verticalSize: Int): Re
     return this
 }
 
-fun <T : Any, DBINDING : ViewDataBinding> RecyclerView.registerItemView(
+inline fun <reified T : Any, DBINDING : ViewDataBinding> RecyclerView.registerItemView(
     layoutRes: Int,
-    clazz: Class<T>,
-    bindItemView: (binding: DBINDING, data: T, position: Int) -> Unit
+    noinline bindItemView: (binding: DBINDING, data: T, position: Int) -> Unit
 ): RecyclerView {
     if (adapter == null) {
         adapter = BaseRvMultipleDataBindingAdapter()
     }
     (adapter as? BaseRvMultipleDataBindingAdapter)?.registerItemLayout(
-        context, layoutRes, clazz, bindItemView
+        context, layoutRes, T::class.java, bindItemView
     ) ?: kotlin.run { throw RuntimeException("使用的适配器不支持多样式布局") }
     return this
 }
