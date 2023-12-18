@@ -84,7 +84,7 @@ class MainActivity : AppCompatActivity() {
                     "",
                     "",
                     ""
-                )
+                ), distinct = true
             )
         }
     }

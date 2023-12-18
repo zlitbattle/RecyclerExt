@@ -34,6 +34,7 @@ fun RecyclerView.vertical(
                 return !closeScroll
             }
         }
+
         else -> {
             if (isStaggered) {
                 object : StaggeredGridLayoutManager(spanCount, VERTICAL) {
@@ -62,6 +63,7 @@ fun RecyclerView.horizontal(
                 return !closeScroll
             }
         }
+
         else -> {
             if (isStaggered) {
                 object : StaggeredGridLayoutManager(spanCount, HORIZONTAL) {
@@ -311,16 +313,19 @@ fun <T> RecyclerView.getCustomAdapter(): BaseRvAdapter<T, out RecyclerView.ViewH
 fun <T> RecyclerView.refreshData(
     datas: List<T>,
     append: Boolean = false,
-    autoShowEmpty: Boolean = true
+    autoShowEmpty: Boolean = true,
+    distinct: Boolean = false
 ): RecyclerView {
     if (datas.isNotEmpty()) {
         hideEmptyLayout()
     }
     (adapter as? BaseRvAdapter<T, *>)?.apply {
         if (append) {
-            addData(datas)
+            val tmpData = if (distinct) datas.distinct().filter { this.data?.contains(it) != true }
+            else datas
+            addData(tmpData)
         } else {
-            refreshData(datas)
+            refreshData(if (distinct) datas.distinct() else datas)
         }
     } ?: kotlin.run {
         throw RuntimeException("适配器非BaseRvDataBindingAdapter类型")
@@ -402,6 +407,7 @@ fun RecyclerView.divider(color: Int, horizontalSize: Int, verticalSize: Int): Re
                 (layoutManager as GridLayoutManager).spanCount, horizontalSize, verticalSize, false
             )
         }
+
         is StaggeredGridLayoutManager -> {
             GridSpacingSupportRtlItemDecoration(
                 (layoutManager as StaggeredGridLayoutManager).spanCount,
@@ -410,6 +416,7 @@ fun RecyclerView.divider(color: Int, horizontalSize: Int, verticalSize: Int): Re
                 false
             )
         }
+
         else -> RecyclerViewDivider(context, orientation).apply {
             setDrawable(GradientDrawable().apply {
                 setColor(color)
