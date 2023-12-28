@@ -9,6 +9,7 @@ import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.SimpleItemAnimator
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.scwang.smart.refresh.layout.SmartRefreshLayout
 import com.scwang.smart.refresh.layout.api.RefreshFooter
@@ -26,7 +27,10 @@ inline val RecyclerView.orientation
     }
 
 fun RecyclerView.vertical(
-    spanCount: Int = 0, isStaggered: Boolean = false, closeScroll: Boolean = false
+    spanCount: Int = 0,
+    isStaggered: Boolean = false,
+    closeScroll: Boolean = false,
+    hasFixedSize: Boolean = false
 ): RecyclerView {
     layoutManager = when (spanCount) {
         0, 1 -> object : LinearLayoutManager(context) {
@@ -55,7 +59,10 @@ fun RecyclerView.vertical(
 }
 
 fun RecyclerView.horizontal(
-    spanCount: Int = 0, isStaggered: Boolean = false, closeScroll: Boolean = false
+    spanCount: Int = 0,
+    isStaggered: Boolean = false,
+    closeScroll: Boolean = false,
+    hasFixedSize: Boolean = false
 ): RecyclerView {
     layoutManager = when (spanCount) {
         0, 1 -> object : LinearLayoutManager(context, HORIZONTAL, false) {
@@ -433,6 +440,10 @@ inline fun <reified T : Any, DBINDING : ViewDataBinding> RecyclerView.registerIt
     layoutRes: Int,
     noinline bindItemView: (binding: DBINDING, data: T, position: Int) -> Unit
 ): RecyclerView {
+    (itemAnimator as? SimpleItemAnimator)?.apply {
+        supportsChangeAnimations = false
+        changeDuration = 0
+    }
     if (adapter == null) {
         adapter = BaseRvMultipleDataBindingAdapter()
     }
