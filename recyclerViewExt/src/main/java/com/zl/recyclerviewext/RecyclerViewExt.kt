@@ -32,6 +32,7 @@ fun RecyclerView.vertical(
     closeScroll: Boolean = false,
     hasFixedSize: Boolean = false
 ): RecyclerView {
+    this.setHasFixedSize(hasFixedSize)
     layoutManager = when (spanCount) {
         0, 1 -> object : LinearLayoutManager(context) {
             override fun canScrollVertically(): Boolean {
@@ -64,6 +65,7 @@ fun RecyclerView.horizontal(
     closeScroll: Boolean = false,
     hasFixedSize: Boolean = false
 ): RecyclerView {
+    this.setHasFixedSize(hasFixedSize)
     layoutManager = when (spanCount) {
         0, 1 -> object : LinearLayoutManager(context, HORIZONTAL, false) {
             override fun canScrollHorizontally(): Boolean {
