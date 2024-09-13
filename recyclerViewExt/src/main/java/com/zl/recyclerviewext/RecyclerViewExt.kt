@@ -1,6 +1,7 @@
 ﻿package com.zl.recyclerviewext
 
 import android.graphics.drawable.GradientDrawable
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -310,6 +311,7 @@ fun RecyclerView.hideEmptyLayout(): RecyclerView {
         frameLayout?.getChildAt(0)?.visibility = View.VISIBLE
         frameLayout?.getChildAt(1)?.visibility = View.GONE
     } catch (e: Exception) {
+        Log.d("ling.zhang.log",e.stackTraceToString())
     }
     return this
 }
