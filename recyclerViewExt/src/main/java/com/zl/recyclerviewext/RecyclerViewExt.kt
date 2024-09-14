@@ -294,17 +294,10 @@ fun RecyclerView.registerEmptyLayout(
 fun RecyclerView.showEmptyLayout(configEmptyViewHandler: ((View) -> Unit)? = null): RecyclerView {
     Log.d("ling.zhang.log", "showEmptyLayout:${RuntimeException().stackTraceToString()}")
     getCustomAdapter<Any>().refreshData(listOf())
-//    post {
-    Log.d("ling.zhang.log", "showEmptyLayout111:${RuntimeException().stackTraceToString()}")
-    rootView.post {
-        Log.d("ling.zhang.log", "showEmptyLayout222:${RuntimeException().stackTraceToString()}")
-        rootView.findViewById<ViewGroup>(hashCode())?.let { frameLayout ->
-            Log.d("ling.zhang.log", "showEmptyLayout333:${RuntimeException().stackTraceToString()}")
-            frameLayout.getChildAt(0)?.visibility = View.GONE
-            frameLayout.getChildAt(1)?.visibility = View.VISIBLE
-            configEmptyViewHandler?.invoke(frameLayout.getChildAt(1))
-        }
-//        }
+    rootView.findViewById<ViewGroup>(hashCode())?.let { frameLayout ->
+        frameLayout.getChildAt(0)?.visibility = View.GONE
+        frameLayout.getChildAt(1)?.visibility = View.VISIBLE
+        configEmptyViewHandler?.invoke(frameLayout.getChildAt(1))
     }
     return this
 }
