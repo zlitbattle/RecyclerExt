@@ -292,7 +292,6 @@ fun RecyclerView.registerEmptyLayout(
 }
 
 fun RecyclerView.showEmptyLayout(configEmptyViewHandler: ((View) -> Unit)? = null): RecyclerView {
-    Log.d("ling.zhang.log", "showEmptyLayout:${RuntimeException().stackTraceToString()}")
     getCustomAdapter<Any>().refreshData(listOf())
     rootView.findViewById<ViewGroup>(hashCode())?.let { frameLayout ->
         frameLayout.getChildAt(0)?.visibility = View.GONE
@@ -304,12 +303,10 @@ fun RecyclerView.showEmptyLayout(configEmptyViewHandler: ((View) -> Unit)? = nul
 
 fun RecyclerView.hideEmptyLayout(): RecyclerView {
     try {
-        Log.d("ling.zhang.log", "hideEmptyLayout:${RuntimeException().stackTraceToString()}")
         val frameLayout = rootView.findViewById<ViewGroup>(hashCode())
         frameLayout?.getChildAt(0)?.visibility = View.VISIBLE
         frameLayout?.getChildAt(1)?.visibility = View.GONE
     } catch (e: Exception) {
-        Log.d("ling.zhang.log", e.stackTraceToString())
     }
     return this
 }
