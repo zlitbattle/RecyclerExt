@@ -152,6 +152,32 @@ fun RecyclerView.listenerRefresh(refreshListener: (refreshLayout: RefreshLayout)
     return this
 }
 
+fun RecyclerView.autoRefresh(): RecyclerView {
+    var parent = parent
+    while (parent != null && parent !is SmartRefreshLayout) {
+        parent = parent.parent
+    }
+    if (parent is SmartRefreshLayout) {
+        parent.autoRefresh()
+    } else {
+        throw RuntimeException("recyclerView未被SmartRefreshLayout包裹，无法监听下拉刷新")
+    }
+    return this
+}
+
+fun RecyclerView.loadMore(): RecyclerView {
+    var parent = parent
+    while (parent != null && parent !is SmartRefreshLayout) {
+        parent = parent.parent
+    }
+    if (parent is SmartRefreshLayout) {
+        parent.autoLoadMore()
+    } else {
+        throw RuntimeException("recyclerView未被SmartRefreshLayout包裹，无法监听下拉刷新")
+    }
+    return this
+}
+
 /**
  * 监听上拉加载事件
  */
