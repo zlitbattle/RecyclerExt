@@ -158,7 +158,7 @@ fun RecyclerView.autoRefresh(): RecyclerView {
         parent = parent.parent
     }
     if (parent is SmartRefreshLayout) {
-        parent.autoRefresh()
+        parent.autoRefresh(0, 1, 1.25f, false)
     } else {
         throw RuntimeException("recyclerView未被SmartRefreshLayout包裹，无法监听下拉刷新")
     }
