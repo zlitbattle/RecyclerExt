@@ -297,6 +297,7 @@ fun RecyclerView.registerEmptyLayout(
             val index = parent.indexOfChild(targetView)
             parent.removeViewAt(index)
             val frameLayout = FrameLayout(context)
+            frameLayout.clipChildren = false
             frameLayout.addView(targetView, ViewGroup.LayoutParams(-1, -1))
             val emptyLayout = LayoutInflater.from(context).inflate(emptyLayoutRes, null, false)
             configEmptyViewHandler?.invoke(emptyLayout)
