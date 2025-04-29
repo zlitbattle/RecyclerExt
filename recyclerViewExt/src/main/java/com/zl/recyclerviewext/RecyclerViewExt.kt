@@ -1,7 +1,6 @@
 ﻿package com.zl.recyclerviewext
 
 import android.graphics.drawable.GradientDrawable
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -319,7 +318,7 @@ fun RecyclerView.registerEmptyLayout(
 }
 
 fun RecyclerView.showEmptyLayout(configEmptyViewHandler: ((View) -> Unit)? = null): RecyclerView {
-    getCustomAdapter<Any>().refreshData(listOf())
+    getCustomAdapter<Any>().refreshData(emptyList())
     rootView.findViewById<ViewGroup>(hashCode())?.let { frameLayout ->
         frameLayout.getChildAt(0)?.visibility = View.GONE
         frameLayout.getChildAt(1)?.visibility = View.VISIBLE
@@ -344,7 +343,7 @@ fun <T> RecyclerView.getCustomAdapter(): BaseRvAdapter<T, out RecyclerView.ViewH
 }
 
 fun <T> RecyclerView.refreshData(
-    datas: List<T>,
+    datas: Collection<T>,
     append: Boolean = false,
     autoShowEmpty: Boolean = true,
     distinct: Boolean = false
@@ -373,7 +372,7 @@ fun <T> RecyclerView.refreshData(
     return this
 }
 
-fun <T> RecyclerView.insertData(datas: List<T>, index: Int): RecyclerView {
+fun <T> RecyclerView.insertData(datas: Collection<T>, index: Int): RecyclerView {
     hideEmptyLayout()
     (adapter as? BaseRvAdapter<T, *>)?.insertData(datas, index) ?: kotlin.run {
         throw RuntimeException("适配器非BaseRvDataBindingAdapter类型")
