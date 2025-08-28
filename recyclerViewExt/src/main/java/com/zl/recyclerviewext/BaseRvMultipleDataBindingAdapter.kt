@@ -19,12 +19,11 @@ open class BaseRvMultipleDataBindingAdapter :
         mutableMapOf<Class<out Any>, RecyclerViewItemType<out Any, out ViewDataBinding>>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
-        val key = itemTypeMap.keys.find { it.hashCode() == viewType }
-            ?: itemTypeMap.keys.find { keyClass ->
-                data?.any { it.javaClass.superclass == keyClass } ?: false
-            }
-        return VH((itemTypeMap[key] ?: itemTypeMap[key?.superclass])?.getDataBinding(parent)
-            ?: kotlin.run { throw RuntimeException("未找到匹配的类型") })
+        val key =
+            itemTypeMap.keys.find { it.hashCode() == viewType || it.superclass?.hashCode() == viewType }
+        return VH(
+            (itemTypeMap[key])?.getDataBinding(parent)
+                ?: kotlin.run { throw RuntimeException("未找到匹配的类型") })
     }
 
     override fun onBindViewHolder(holder: VH, position: Int) {
@@ -45,7 +44,8 @@ open class BaseRvMultipleDataBindingAdapter :
     }
 
     override fun getItemViewType(position: Int): Int {
-        return data!![position].javaClass.hashCode()
+        val dataCls = data!![position].javaClass
+        return dataCls.superclass?.hashCode() ?: dataCls.hashCode()
     }
 
     fun <T : Any, DBINDING : ViewDataBinding> registerItemLayout(
