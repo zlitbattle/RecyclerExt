@@ -20,7 +20,8 @@ open class BaseRvMultipleDataBindingAdapter :
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
         val key =
-            itemTypeMap.keys.find { it.hashCode() == viewType || it.superclass?.hashCode() == viewType }
+            itemTypeMap.keys.find { it.hashCode() == viewType }
+
         return VH(
             (itemTypeMap[key])?.getDataBinding(parent)
                 ?: kotlin.run { throw RuntimeException("未找到匹配的类型") })
@@ -37,15 +38,20 @@ open class BaseRvMultipleDataBindingAdapter :
                 itemLongClickListener?.invoke(view, data!![position], position) ?: false
             }
         }
-        val recyclerViewItemType = itemTypeMap[data!![position].javaClass]
-            ?: itemTypeMap[data?.getOrNull(position)?.javaClass?.superclass ?: 0]
+        val dataCls = data!![position].javaClass
+        val recyclerViewItemType = itemTypeMap[dataCls]
         recyclerViewItemType?.bindData(holder.dataBinding, data!![position], position)
         holder.dataBinding.executePendingBindings()
     }
 
     override fun getItemViewType(position: Int): Int {
-        val dataCls = data!![position].javaClass
-        return dataCls.superclass?.hashCode() ?: dataCls.hashCode()
+        val data = data!![position]
+        for (klass in itemTypeMap.keys) {
+            if (klass.isAssignableFrom(data.javaClass)) {
+                return klass.hashCode()
+            }
+        }
+        return -1
     }
 
     fun <T : Any, DBINDING : ViewDataBinding> registerItemLayout(
