@@ -1,6 +1,5 @@
 ﻿package com.zl.recyclerviewext
 
-import android.graphics.drawable.GradientDrawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,15 +14,16 @@ import com.scwang.smart.refresh.layout.SmartRefreshLayout
 import com.scwang.smart.refresh.layout.api.RefreshFooter
 import com.scwang.smart.refresh.layout.api.RefreshHeader
 import com.scwang.smart.refresh.layout.api.RefreshLayout
+import com.zl.recyclerviewext.decoration.GridSpacingItemDecoration
+import com.zl.recyclerviewext.decoration.LinearLayoutManagerSpacingItemDecoration
 
+@RecyclerView.Orientation
 inline val RecyclerView.orientation
-    get() = if (layoutManager == null) -1 else layoutManager.run {
-        when (this) {
-            is GridLayoutManager -> 2
-            is StaggeredGridLayoutManager -> 2
-            is LinearLayoutManager -> orientation
-            else -> -1
-        }
+    get() = when (layoutManager) {
+        is GridLayoutManager -> (layoutManager as GridLayoutManager).orientation
+        is StaggeredGridLayoutManager -> (layoutManager as StaggeredGridLayoutManager).orientation
+        is LinearLayoutManager -> (layoutManager as LinearLayoutManager).orientation
+        else -> RecyclerView.VERTICAL
     }
 
 fun RecyclerView.vertical(
@@ -432,30 +432,57 @@ fun RecyclerView.divider(color: Int, size: Int): RecyclerView {
     return divider(color, size, size)
 }
 
-fun RecyclerView.divider(color: Int, horizontalSize: Int, verticalSize: Int): RecyclerView {
+fun RecyclerView.divider(
+    color: Int,
+    horizontalSize: Int,
+    verticalSize: Int,
+    includeEdge: Boolean = false
+): RecyclerView {
+    divider(color, horizontalSize, verticalSize, horizontalSize, verticalSize, includeEdge)
+    return this
+}
+
+fun RecyclerView.divider(
+    color: Int,
+    left: Int,
+    top: Int,
+    right: Int,
+    bottom: Int,
+    includeEdge: Boolean = false
+): RecyclerView {
     val itemDecoration = when (layoutManager) {
         is GridLayoutManager -> {
-            GridSpacingSupportRtlItemDecoration(
-                (layoutManager as GridLayoutManager).spanCount, horizontalSize, verticalSize, false
+            GridSpacingItemDecoration(
+                color,
+                (layoutManager as GridLayoutManager).spanCount,
+                left,
+                top,
+                right,
+                bottom,
+                includeEdge
             )
         }
 
         is StaggeredGridLayoutManager -> {
-            GridSpacingSupportRtlItemDecoration(
+            GridSpacingItemDecoration(
+                color,
                 (layoutManager as StaggeredGridLayoutManager).spanCount,
-                horizontalSize,
-                verticalSize,
-                false
+                left,
+                top,
+                right,
+                bottom,
+                includeEdge
             )
         }
 
-        else -> RecyclerViewDivider(context, orientation).apply {
-            setDrawable(GradientDrawable().apply {
-                setColor(color)
-                shape = GradientDrawable.RECTANGLE
-                setSize(horizontalSize, verticalSize)
-            })
-        }
+        else -> LinearLayoutManagerSpacingItemDecoration(
+            color,
+            left,
+            top,
+            right,
+            bottom,
+            includeEdge
+        )
     }
     addItemDecoration(itemDecoration)
     return this
