@@ -30,7 +30,8 @@ fun RecyclerView.vertical(
     spanCount: Int = 0,
     isStaggered: Boolean = false,
     closeScroll: Boolean = false,
-    hasFixedSize: Boolean = false
+    hasFixedSize: Boolean = false,
+    spanSizeInvocation: ((position: Int) -> Int)? = null
 ): RecyclerView {
     this.setHasFixedSize(hasFixedSize)
     layoutManager = when (spanCount) {
@@ -48,11 +49,18 @@ fun RecyclerView.vertical(
                     }
                 }
             } else {
-                object : GridLayoutManager(context, spanCount) {
+                val gridLayoutManager = object : GridLayoutManager(context, spanCount) {
                     override fun canScrollVertically(): Boolean {
                         return !closeScroll
                     }
                 }
+                if (spanSizeInvocation != null) {
+                    gridLayoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+                        override fun getSpanSize(position: Int): Int =
+                            spanSizeInvocation.invoke(position)
+                    }
+                }
+                gridLayoutManager
             }
         }
     }
@@ -63,7 +71,8 @@ fun RecyclerView.horizontal(
     spanCount: Int = 0,
     isStaggered: Boolean = false,
     closeScroll: Boolean = false,
-    hasFixedSize: Boolean = false
+    hasFixedSize: Boolean = false,
+    spanSizeInvocation: ((position: Int) -> Int)? = null
 ): RecyclerView {
     this.setHasFixedSize(hasFixedSize)
     layoutManager = when (spanCount) {
@@ -81,11 +90,19 @@ fun RecyclerView.horizontal(
                     }
                 }
             } else {
-                object : GridLayoutManager(context, spanCount, HORIZONTAL, false) {
-                    override fun canScrollHorizontally(): Boolean {
-                        return !closeScroll
+                val gridLayoutManager =
+                    object : GridLayoutManager(context, spanCount, HORIZONTAL, false) {
+                        override fun canScrollHorizontally(): Boolean {
+                            return !closeScroll
+                        }
+                    }
+                if (spanSizeInvocation != null) {
+                    gridLayoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+                        override fun getSpanSize(position: Int): Int =
+                            spanSizeInvocation.invoke(position)
                     }
                 }
+                gridLayoutManager
             }
         }
     }

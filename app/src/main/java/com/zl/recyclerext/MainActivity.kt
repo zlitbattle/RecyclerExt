@@ -16,7 +16,11 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         findViewById<RecyclerView>(R.id.recycler_view)?.apply {
-            horizontal()
+            vertical(5) { position ->
+                if (position == 14) {
+                    5
+                } else 1
+            }
             divider(Color.RED, 30, 10, includeEdge = false)
             registerItemView<TestBean, ItemDataBinding>(R.layout.item_data) { binding, data, position ->
                 binding.text.text = (0..100000).random().toString()

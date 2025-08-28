@@ -7,6 +7,7 @@ import android.view.View
 import android.widget.LinearLayout
 import androidx.annotation.ColorInt
 import androidx.core.view.children
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.zl.recyclerviewext.orientation
 
@@ -27,17 +28,15 @@ class GridSpacingItemDecoration(
 
     override fun onDraw(c: Canvas, parent: RecyclerView, state: RecyclerView.State) {
         super.onDraw(c, parent, state)
-        val maxPosition = (parent.adapter?.itemCount ?: 0) - 1
         for (child in parent.children) {
             val curPosition = parent.getChildAdapterPosition(child)
-            val isFirst = curPosition < spanCount
-            val lastNum = (((maxPosition + 1) % spanCount).takeIf { it != 0 }) ?: spanCount
-            val isLast = curPosition > maxPosition - lastNum
+            val isFirst = isFirstRow(curPosition, parent)
+            val isLast = isLastRow(curPosition, parent)
 
             when (parent.orientation) {
                 LinearLayout.HORIZONTAL -> {
-                    val farTop = curPosition % spanCount == 0
-                    val farBottom = curPosition % spanCount == spanCount - 1
+                    val farTop = isFirstInRow(curPosition, parent)
+                    val farBottom = isLastInRow(curPosition, parent)
                     if (includeEdge || !isFirst) {
                         drawLeft(c, child)
                     }
@@ -53,8 +52,8 @@ class GridSpacingItemDecoration(
                 }
 
                 LinearLayout.VERTICAL -> {
-                    val farLeft = curPosition % spanCount == 0
-                    val farRight = curPosition % spanCount == spanCount - 1
+                    val farLeft = isFirstInRow(curPosition, parent)
+                    val farRight = isLastInRow(curPosition, parent)
                     if (includeEdge || !isFirst) {
                         drawTop(c, child)
                     }
@@ -79,15 +78,13 @@ class GridSpacingItemDecoration(
         state: RecyclerView.State
     ) {
         val curPosition = parent.getChildAdapterPosition(view)
-        val maxPosition = (parent.adapter?.itemCount ?: 0) - 1
-        val isFirst = curPosition < spanCount
-        val lastNum = (((maxPosition + 1) % spanCount).takeIf { it != 0 }) ?: spanCount
-        val isLast = curPosition > maxPosition - lastNum
+        val isFirst = isFirstRow(curPosition, parent)
+        val isLast = isLastRow(curPosition, parent)
 
         when (parent.orientation) {
             LinearLayout.HORIZONTAL -> {
-                val farTop = curPosition % spanCount == 0
-                val farBottom = curPosition % spanCount == spanCount - 1
+                val farTop = isFirstInRow(curPosition, parent)
+                val farBottom = isLastInRow(curPosition, parent)
                 val leftSpace = if (isFirst && !includeEdge) 0 else left
                 val rightSpace = if (isLast && !includeEdge) 0 else right
                 val topSpace = if (includeEdge || !farTop) top else 0
@@ -96,16 +93,14 @@ class GridSpacingItemDecoration(
             }
 
             LinearLayout.VERTICAL -> {
-                val farLeft = curPosition % spanCount == 0
-                val farRight = curPosition % spanCount == spanCount - 1
+                val farLeft = isFirstInRow(curPosition, parent)
+                val farRight = isLastInRow(curPosition, parent)
                 val leftSpace = if (includeEdge || !farLeft) left else 0
                 val rightSpace = if (includeEdge || !farRight) right else 0
                 val topSpace = if (isFirst && !includeEdge) 0 else top
                 val bottomSpace = if (isLast && !includeEdge) 0 else bottom
                 outRect.set(leftSpace, topSpace, rightSpace, bottomSpace)
             }
-
-            else -> super.getItemOffsets(outRect, view, parent, state)
         }
     }
 
@@ -128,4 +123,59 @@ class GridSpacingItemDecoration(
         val topRect = Rect(child.right, child.top, child.right + right, child.bottom)
         canvas.drawRect(topRect, mPaint)
     }
+
+    fun isLastRow(position: Int, parent: RecyclerView): Boolean {
+        val layoutManager = parent.layoutManager as GridLayoutManager
+        val itemCount = parent.adapter?.itemCount ?: return false
+        val spanSizeLookup = layoutManager.spanSizeLookup
+
+        var spanSum = 0
+        var lastRowFirstPos = 0
+
+        for (i in 0 until itemCount) {
+            val spanSize = spanSizeLookup.getSpanSize(i)
+            if (spanSum + spanSize > spanCount) {
+                spanSum = 0
+            }
+            if (spanSum == 0) {
+                lastRowFirstPos = i
+            }
+            spanSum += spanSize
+        }
+        return position >= lastRowFirstPos
+    }
+
+    fun isFirstRow(position: Int, parent: RecyclerView): Boolean {
+        val layoutManager = parent.layoutManager as? GridLayoutManager ?: return false
+        val spanCount = layoutManager.spanCount
+        val itemCount = parent.adapter?.itemCount ?: return false
+        val spanSizeLookup = layoutManager.spanSizeLookup
+
+        var spanSum = 0
+        for (i in 0 until itemCount) {
+            spanSum += spanSizeLookup.getSpanSize(i)
+            if (spanSum > spanCount) {
+                // 已经到第二行
+                return position < i
+            }
+        }
+        // 如果 item 数量本来就不足一行，那么所有的都是第一行
+        return true
+    }
+
+    fun isFirstInRow(position: Int, parent: RecyclerView): Boolean {
+        val layoutManager = parent.layoutManager as? GridLayoutManager ?: return false
+        val spanSizeLookup = layoutManager.spanSizeLookup
+        val spanIndex = spanSizeLookup.getSpanIndex(position, layoutManager.spanCount)
+        return spanIndex == 0
+    }
+
+    fun isLastInRow(position: Int, parent: RecyclerView): Boolean {
+        val layoutManager = parent.layoutManager as? GridLayoutManager ?: return false
+        val spanSizeLookup = layoutManager.spanSizeLookup
+        val spanSize = spanSizeLookup.getSpanSize(position)
+        val spanIndex = spanSizeLookup.getSpanIndex(position, layoutManager.spanCount)
+        return spanIndex + spanSize == layoutManager.spanCount
+    }
+
 }
