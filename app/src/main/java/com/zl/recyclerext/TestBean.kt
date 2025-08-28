@@ -1,6 +1,7 @@
 package com.zl.recyclerext
 
-open class TestBean {
+open class TestBean : ITest {
 }
 
-class Test1Bean : TestBean() {}
+open class Test1Bean : TestBean() {
+}

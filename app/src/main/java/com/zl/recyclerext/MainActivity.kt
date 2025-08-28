@@ -22,7 +22,7 @@ class MainActivity : AppCompatActivity() {
                 } else 1
             }
             divider(Color.RED, 30, 10, includeEdge = false)
-            registerItemView<TestBean, ItemDataBinding>(R.layout.item_data) { binding, data, position ->
+            registerItemView<ITest, ItemDataBinding>(R.layout.item_data) { binding, data, position ->
                 binding.text.text = (0..100000).random().toString()
             }
             refreshData(
@@ -30,12 +30,12 @@ class MainActivity : AppCompatActivity() {
                     TestBean(),
                     TestBean(),
                     Test1Bean(),
+                    Test1Bean(),
                     TestBean(),
                     TestBean(),
+                    Test1Bean(),
                     TestBean(),
-                    TestBean(),
-                    TestBean(),
-                    TestBean(),
+                    Test1Bean(),
                     TestBean(),
                     TestBean(),
                     TestBean(),
